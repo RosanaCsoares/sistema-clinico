@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso Médico Restrito</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-dark text-light d-flex align-items-center justify-content-center vh-100">
+    <div class="container">
+        <div class="card bg-light text-dark shadow-lg p-4 mx-auto custom-card" style="max-width: 450px;">
+            
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+                <h5 class="text-danger fw-bold mb-0">⚠️ Emergência</h5>
+                <a href="index.html" class="btn btn-sm btn-outline-secondary">Voltar</a>
+            </div>
+
+            <div id="secaoSenha">
+                <p class="text-center mb-3">Para visualizar a ficha clínica deste paciente, insira a Senha de Acesso Público.</p>
+                <input type="password" id="inputSenhaPublica" class="form-control mb-3" placeholder="Digite a senha">
+                <button id="btnAcessarFicha" class="btn btn-danger w-100">Acessar Ficha</button>
+            </div>
+            
+            <div id="secaoFicha" class="hidden">
+                <h5 class="border-bottom pb-2 mb-3">Paciente: Usuário Teste</h5>
+                <ul class="list-group list-group-flush mb-4">
+                    <li class="list-group-item bg-transparent px-0"><strong>Tipo Sanguíneo:</strong> <span class="text-danger fw-bold fs-5">O+</span></li>
+                    <li class="list-group-item bg-transparent px-0"><strong>Alergias:</strong> Dipirona</li>
+                    <li class="list-group-item bg-transparent px-0"><strong>Medicamentos:</strong> Losartana</li>
+                    <li class="list-group-item bg-transparent px-0"><strong>Doenças:</strong> Hipertensão</li>
+                </ul>
+                <div class="alert alert-warning">
+                    <strong>Contato de Emergência:</strong><br>
+                    Maria - (11) 99999-9999
+                </div>
+                <button onclick="window.location.reload()" class="btn btn-outline-secondary w-100 mt-2">Ocultar Ficha / Voltar</button>
+            </div>
+        </div>
+    </div>
+    <script src="js/publico.js"></script>
+</body>
+</html>
