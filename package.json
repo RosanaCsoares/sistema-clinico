@@ -1,0 +1,25 @@
+{
+  "name": "sistema-clinico",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000S\u0000y\u0000s\u0000t\u0000e\u0000m\u0000M\u0000e\u0000d\u0000 \u0000-\u0000 \u0000S\u0000i\u0000s\u0000t\u0000e\u0000m\u0000a\u0000 \u0000p\u0000a\u0000r\u0000a\u0000 \u0000C\u0000o\u0000m\u0000p\u0000a\u0000r\u0000t\u0000i\u0000l\u0000h\u0000a\u0000m\u0000e\u0000n\u0000t\u0000o\u0000 \u0000d\u0000e\u0000 \u0000I\u0000n\u0000f\u0000o\u0000r\u0000m\u0000a\u0000�\u0000�\u0000e\u0000s\u0000 \u0000C\u0000l\u0000�\u0000n\u0000i\u0000c\u0000a\u0000s\u0000\r\u0000 \u0000",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RosanaCsoares/sistema-clinico.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RosanaCsoares/sistema-clinico/issues"
+  },
+  "homepage": "https://github.com/RosanaCsoares/sistema-clinico#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "sqlite3": "^6.0.1"
+  }
+}
