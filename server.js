@@ -29,27 +29,24 @@ const db = new sqlite3.Database(dbPath, (err) => {
 });
 
 // ==========================================
-// ROTAS DA API (O "CÉREBRO" DO SISTEMA)
+// ROTAS DA API
 // ==========================================
 
 // 1. Rota para Receber o Cadastro Completo
 app.post('/api/cadastro', (req, res) => {
     const { email, senha, nome, sobrenome, rg, cpf, dataNascimento, sexo, tipoSanguineo, alergias, medicamentos, doencas, cirurgias, contatoNome, contatoTelefone, contatoEmail, senhaPublica } = req.body;
 
-    // Inserir na tabela de utilizadores
     db.run(`INSERT INTO usuarios (email, senha) VALUES (?, ?)`, [email, senha], function(err) {
-        if (err) return res.status(500).json({ erro: 'Erro ao criar utilizador. O email já existe?' });
+        if (err) return res.status(500).json({ erro: 'Erro ao criar utilizador. O email ou CPF já existem?' });
         
-        const idUsuario = this.lastID; // Pega o ID gerado
+        const idUsuario = this.lastID;
 
-        // Inserir na ficha clínica
         db.run(`INSERT INTO informacoes_clinicas (id_usuario, nome, sobrenome, rg, cpf, data_nascimento, sexo, tipo_sanguineo, alergias, medicamentos, doencas, cirurgias) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
         [idUsuario, nome, sobrenome, rg, cpf, dataNascimento, sexo, tipoSanguineo, alergias, medicamentos, doencas, cirurgias], function(err) {
             if (err) return res.status(500).json({ erro: 'Erro ao salvar ficha clínica.' });
 
             const idInfo = this.lastID;
 
-            // Inserir contato de emergência e senha pública
             db.run(`INSERT INTO contatos_emergencia (id_info, nome_contato, telefone, email_contato) VALUES (?, ?, ?, ?)`, [idInfo, contatoNome, contatoTelefone, contatoEmail]);
             db.run(`INSERT INTO senhas_publicas (id_info, senha_publica) VALUES (?, ?)`, [idInfo, senhaPublica]);
             db.run(`INSERT INTO qrcodes (id_info, link_publico) VALUES (?, ?)`, [idInfo, `http://localhost:3000/publico.html?id=${idInfo}`]);
@@ -66,7 +63,7 @@ app.post('/api/login', (req, res) => {
         if (err) return res.status(500).json({ erro: 'Erro no servidor' });
         if (!row) return res.status(401).json({ erro: 'E-mail ou senha incorretos' });
         
-        res.json({ mensagem: 'Login bem-sucedido', idUsuario: row.id_usuario });
+        res.json({ margin: 'Login bem-sucedido', idUsuario: row.id_usuario });
     });
 });
 
@@ -74,7 +71,7 @@ app.post('/api/login', (req, res) => {
 app.get('/api/perfil/:idUsuario', (req, res) => {
     const idUsuario = req.params.idUsuario;
     const sql = `
-        SELECT u.email, ic.*, ce.nome_contato, ce.telefone, sp.senha_publica 
+        SELECT u.email as email_usuario, ic.*, ce.nome_contato, ce.telefone, ce.email_contato, sp.senha_publica 
         FROM usuarios u
         JOIN informacoes_clinicas ic ON u.id_usuario = ic.id_usuario
         LEFT JOIN contatos_emergencia ce ON ic.id_info = ce.id_info
@@ -85,6 +82,35 @@ app.get('/api/perfil/:idUsuario', (req, res) => {
         if (err) return res.status(500).json({ erro: 'Erro ao buscar dados' });
         if (!row) return res.status(404).json({ erro: 'Perfil não encontrado' });
         res.json(row);
+    });
+});
+
+// 4. Rota para Atualizar Cadastro (Editar Completo)
+app.put('/api/perfil/:idUsuario', (req, res) => {
+    const idUsuario = req.params.idUsuario;
+    const { nome, sobrenome, rg, cpf, dataNascimento, sexo, tipoSanguineo, alergias, medicamentos, doencas, cirurgias, nomeContato, telefoneContato, emailContato, senhaPublica } = req.body;
+
+    db.get(`SELECT id_info FROM informacoes_clinicas WHERE id_usuario = ?`, [idUsuario], (err, row) => {
+        if (err || !row) return res.status(500).json({ erro: 'Usuário não encontrado' });
+        
+        const idInfo = row.id_info;
+
+        // Atualiza a Ficha Clínica inteira com todos os campos novos
+        db.run(`UPDATE informacoes_clinicas SET nome = ?, sobrenome = ?, rg = ?, cpf = ?, data_nascimento = ?, sexo = ?, tipo_sanguineo = ?, alergias = ?, medicamentos = ?, doencas = ?, cirurgias = ? WHERE id_usuario = ?`, 
+        [nome, sobrenome, rg, cpf, dataNascimento, sexo, tipoSanguineo, alergias, medicamentos, doencas, cirurgias, idUsuario], function(err) {
+            if (err) return res.status(500).json({ erro: 'Erro ao atualizar ficha clínica' });
+
+            // Atualiza Contato de Emergência completo
+            db.run(`UPDATE contatos_emergencia SET nome_contato = ?, telefone = ?, email_contato = ? WHERE id_info = ?`, 
+            [nomeContato, telefoneContato, emailContato, idInfo], function(err) {
+                
+                // Atualiza Senha Pública
+                db.run(`UPDATE senhas_publicas SET senha_publica = ? WHERE id_info = ?`, 
+                [senhaPublica, idInfo], function(err) {
+                    res.json({ mensagem: 'Cadastro atualizado com sucesso!' });
+                });
+            });
+        });
     });
 });
 

@@ -9,40 +9,173 @@
 </head>
 <body>
     <div class="container">
-        <div class="card shadow-sm p-4 custom-card" style="max-width: 800px;">
+        <div class="card shadow-sm p-4 custom-card" style="max-width: 900px;">
             <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
                 <h3 class="text-primary fw-bold mb-0">SystemMed</h3>
-                <a href="index.html" class="btn btn-sm btn-outline-secondary">Sair</a>
+                <button onclick="fazerLogout()" class="btn btn-sm btn-outline-secondary">Sair</button>
             </div>
+            
             <div class="row">
-                <div class="col-md-5 text-center border-end">
+                <div class="col-md-4 text-center border-end">
                     <h5>Seu QR Code</h5>
-                    <div id="qrcode-container"></div>
-                    <p class="small text-muted mt-2">Imprima e cole no seu crachá.</p>
-                    <div class="mt-4 border p-2 bg-light rounded">
+                    <div id="qrcode-container" class="d-flex justify-content-center my-3" style="min-height: 150px;"></div>
+                    <p class="small text-muted mt-2 mb-2">Imprima e cole no seu crachá.</p>
+                    
+                    <button id="btnImprimirCracha" class="btn btn-sm btn-dark mb-3">🖨️ Imprimir</button>
+                    
+                    <div class="mt-2 border p-2 bg-light rounded">
                         <span class="d-block small text-muted">Senha de Acesso Público:</span>
-                        <strong>SuaSenha123</strong>
+                        <strong id="displaySenhaPublica" class="fs-5 text-danger">Carregando...</strong>
                         <span class="d-block small text-danger mt-1">(Não escreva isso no crachá)</span>
                     </div>
                 </div>
-                <div class="col-md-7 ps-md-4 mt-4 mt-md-0">
-                    <h5 class="mb-3">Seu Cadastro Clínico Atual</h5>
-                    <p class="mb-1"><strong>Nome:</strong> <span id="displayNome">Usuário Teste</span></p>
-                    <p class="mb-1"><strong>Tipo Sanguíneo:</strong> O+</p>
-                    <p class="mb-1"><strong>Alergias:</strong> Nenhuma</p>
-                    <p class="mb-1"><strong>Medicamentos:</strong> Nenhum</p>
-                    <hr>
-                    <h6 class="fw-bold">Contato de Emergência</h6>
-                    <p class="mb-1"><strong>Nome:</strong> Maria</p>
-                    <p class="mb-1"><strong>Telefone:</strong> (11) 99999-9999</p>
+
+                <div class="col-md-8 ps-md-4 mt-4 mt-md-0">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Seu Cadastro Atual</h5>
+                        <button class="btn btn-sm btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#modalEditar">✏️ Editar</button>
+                    </div>
+                    
+                    <h6 class="text-secondary fw-bold mt-2 border-bottom pb-1">Dados Pessoais</h6>
+                    <div class="row">
+                        <div class="col-md-12"><p class="mb-1"><strong>Nome:</strong> <span id="displayNome">Carregando...</span></p></div>
+                        <div class="col-md-6"><p class="mb-1"><strong>CPF:</strong> <span id="displayCpf">Carregando...</span></p></div>
+                        <div class="col-md-6"><p class="mb-1"><strong>RG:</strong> <span id="displayRg">Carregando...</span></p></div>
+                        <div class="col-md-6"><p class="mb-1"><strong>Nascimento:</strong> <span id="displayDataNascimento">Carregando...</span></p></div>
+                        <div class="col-md-6"><p class="mb-1"><strong>Sexo:</strong> <span id="displaySexo">Carregando...</span></p></div>
+                    </div>
+
+                    <h6 class="text-secondary fw-bold mt-3 border-bottom pb-1">Informações Clínicas</h6>
+                    <div class="row">
+                        <div class="col-md-6"><p class="mb-1"><strong>Tipo Sanguíneo:</strong> <span id="displayTipoSanguineo">Carregando...</span></p></div>
+                        <div class="col-md-6"><p class="mb-1"><strong>Alergias:</strong> <span id="displayAlergias">Carregando...</span></p></div>
+                        <div class="col-md-6"><p class="mb-1"><strong>Medicamentos:</strong> <span id="displayMedicamentos">Carregando...</span></p></div>
+                        <div class="col-md-6"><p class="mb-1"><strong>Doenças Crônicas:</strong> <span id="displayDoencas">Carregando...</span></p></div>
+                        <div class="col-md-12"><p class="mb-1"><strong>Cirurgias Realizadas:</strong> <span id="displayCirurgias">Carregando...</span></p></div>
+                    </div>
+                    
+                    <h6 class="text-secondary fw-bold mt-3 border-bottom pb-1">Contato de Emergência</h6>
+                    <div class="row">
+                        <div class="col-md-6"><p class="mb-1"><strong>Nome:</strong> <span id="displayContatoNome">Carregando...</span></p></div>
+                        <div class="col-md-6"><p class="mb-1"><strong>Telefone:</strong> <span id="displayContatoTelefone">Carregando...</span></p></div>
+                        <div class="col-md-12"><p class="mb-1"><strong>E-mail:</strong> <span id="displayContatoEmail">Carregando...</span></p></div>
+                    </div>
                 </div>
             </div>
-            <div class="d-grid gap-2 mt-5">
+
+            <div class="d-grid gap-2 mt-4">
                 <button class="btn btn-outline-primary" id="btnCompartilhar">Copiar Link Público</button>
                 <button class="btn btn-danger" id="btnApagarConta">Apagar Cadastro Completo</button>
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold">Editar Cadastro Completo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditar">
+                        <h6 class="border-bottom pb-1 text-primary">Dados Pessoais</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label small fw-bold">Nome</label>
+                                <input type="text" class="form-control" id="editNome">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label small fw-bold">Sobrenome</label>
+                                <input type="text" class="form-control" id="editSobrenome">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label small fw-bold">CPF</label>
+                                <input type="text" class="form-control" id="editCpf">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label small fw-bold">RG</label>
+                                <input type="text" class="form-control" id="editRg">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label small fw-bold">Nascimento</label>
+                                <input type="date" class="form-control" id="editDataNascimento">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label small fw-bold">Sexo</label>
+                                <select class="form-select" id="editSexo">
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Feminino</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <h6 class="border-bottom pb-1 mt-3 text-primary">Informações Clínicas</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label small fw-bold">Tipo Sanguíneo</label>
+                                <select class="form-select" id="editTipoSanguineo">
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                    <option value="">Não sei</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label small fw-bold">Alergias</label>
+                                <input type="text" class="form-control" id="editAlergias">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label small fw-bold">Medicamentos</label>
+                                <input type="text" class="form-control" id="editMedicamentos">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label small fw-bold">Doenças Crônicas</label>
+                                <input type="text" class="form-control" id="editDoencas">
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <label class="form-label small fw-bold">Cirurgias</label>
+                                <input type="text" class="form-control" id="editCirurgias">
+                            </div>
+                        </div>
+
+                        <h6 class="border-bottom pb-1 mt-3 text-primary">Contato de Emergência</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label small fw-bold">Nome do Contato</label>
+                                <input type="text" class="form-control" id="editContatoNome">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label small fw-bold">Telefone</label>
+                                <input type="text" class="form-control" id="editContatoTelefone">
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <label class="form-label small fw-bold">E-mail do Contato</label>
+                                <input type="email" class="form-control" id="editContatoEmail">
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="mb-2">
+                            <label class="form-label text-danger small fw-bold">Nova Senha Pública</label>
+                            <input type="text" class="form-control" id="editSenhaPublica">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnSalvarEdicao">Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="js/perfil.js"></script>
 </body>

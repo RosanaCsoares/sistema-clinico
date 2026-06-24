@@ -1,18 +1,28 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const validator = new window.JustValidate('#contaForm', { validateBeforeSubmitting: true });
+    const form = document.getElementById('contaForm');
 
-    validator
-        .addField('#email', [{ rule: 'required', errorMessage: 'E-mail é obrigatório' }, { rule: 'email', errorMessage: 'E-mail inválido' }])
-        .addField('#senha', [{ rule: 'required', errorMessage: 'Senha é obrigatória' }])
-        .addField('#confirmaSenha', [
-            { rule: 'required', errorMessage: 'Confirmação é obrigatória' },
-            {
-                validator: (value, fields) => { return value === fields['#senha'].elem.value; },
-                errorMessage: 'As senhas não coincidem',
-            }
-        ])
-        .onSuccess((event) => {
-            event.preventDefault();
-            window.location.href = "cadastro_clinico.html"; 
-        });
+    form.addEventListener('submit', function (event) {
+        event.preventDefault(); // Impede a página de recarregar
+
+        const email = document.getElementById('email').value;
+        const senha = document.getElementById('senha').value;
+        const confirmaSenha = document.getElementById('confirmaSenha').value;
+
+        if (!email || !senha) {
+            alert("⚠️ Por favor, preencha o e-mail e a senha.");
+            return;
+        }
+
+        if (senha !== confirmaSenha) {
+            alert("⚠️ As senhas não coincidem. Tente novamente.");
+            return;
+        }
+
+        // Salva temporariamente para enviar junto com a ficha clínica
+        sessionStorage.setItem('tempEmail', email);
+        sessionStorage.setItem('tempSenha', senha);
+        
+        // Vai para a tela de dados clínicos
+        window.location.href = "cadastro_clinico.html"; 
+    });
 });
