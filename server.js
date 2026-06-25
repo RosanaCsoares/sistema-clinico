@@ -63,7 +63,7 @@ app.post('/api/login', (req, res) => {
         if (err) return res.status(500).json({ erro: 'Erro no servidor' });
         if (!row) return res.status(401).json({ erro: 'E-mail ou senha incorretos' });
         
-        res.json({ margin: 'Login bem-sucedido', idUsuario: row.id_usuario });
+        res.json({ mensagem: 'Login bem-sucedido', idUsuario: row.id_usuario });
     });
 });
 
@@ -110,6 +110,35 @@ app.put('/api/perfil/:idUsuario', (req, res) => {
                     res.json({ mensagem: 'Cadastro atualizado com sucesso!' });
                 });
             });
+        });
+    });
+});
+
+// 5. Rota Pública de Emergência (Validar Senha e Retornar Dados)
+app.post('/api/publico/:idInfo', (req, res) => {
+    const idInfo = req.params.idInfo;
+    const { senhaDigitada } = req.body;
+
+    // Verifica se a senha confere com a do banco de dados
+    db.get(`SELECT senha_publica FROM senhas_publicas WHERE id_info = ?`, [idInfo], (err, row) => {
+        if (err) return res.status(500).json({ erro: 'Erro no servidor' });
+        if (!row) return res.status(404).json({ erro: 'Ficha não encontrada' });
+        
+        if (row.senha_publica !== senhaDigitada) {
+            return res.status(401).json({ erro: 'Senha incorreta' });
+        }
+
+        // Se a senha estiver correta, devolvemos apenas os dados vitais para emergência
+        const sql = `
+            SELECT ic.nome, ic.sobrenome, ic.data_nascimento, ic.sexo, ic.tipo_sanguineo, ic.alergias, ic.medicamentos, ic.doencas, ic.cirurgias,
+                   ce.nome_contato, ce.telefone
+            FROM informacoes_clinicas ic
+            LEFT JOIN contatos_emergencia ce ON ic.id_info = ce.id_info
+            WHERE ic.id_info = ?
+        `;
+        db.get(sql, [idInfo], (err, dados) => {
+            if (err) return res.status(500).json({ erro: 'Erro ao buscar ficha clínica' });
+            res.json(dados);
         });
     });
 });
