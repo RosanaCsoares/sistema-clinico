@@ -125,10 +125,25 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     }
 
-    document.getElementById("btnApagarConta").addEventListener("click", function() {
+    // 4. APAGAR CADASTRO COMPLETO (ATUALIZADO)
+    document.getElementById("btnApagarConta").addEventListener("click", async function() {
         if(confirm("Tem certeza que deseja apagar todo o seu cadastro? Esta ação é irreversível.")) {
-            alert("Cadastro apagado.");
-            fazerLogout();
+            try {
+                const resposta = await fetch(`/api/perfil/${idUsuario}`, {
+                    method: 'DELETE'
+                });
+
+                if (resposta.ok) {
+                    alert("Cadastro apagado com sucesso.");
+                    fazerLogout();
+                } else {
+                    const resultado = await resposta.json();
+                    alert("Erro ao apagar cadastro: " + (resultado.erro || "Tente novamente."));
+                }
+            } catch (error) {
+                console.error("Erro de comunicação com o servidor:", error);
+                alert("Erro de comunicação com o servidor ao tentar apagar a conta.");
+            }
         }
     });
 

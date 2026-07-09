@@ -143,6 +143,24 @@ app.post('/api/publico/:idInfo', (req, res) => {
     });
 });
 
+// 6. Rota para Apagar Cadastro Completo (NOVA)
+app.delete('/api/perfil/:idUsuario', (req, res) => {
+    const idUsuario = req.params.idUsuario;
+
+    db.run(`DELETE FROM usuarios WHERE id_usuario = ?`, [idUsuario], function(err) {
+        if (err) {
+            console.error("Erro ao apagar conta:", err.message);
+            return res.status(500).json({ erro: 'Erro ao apagar o cadastro no banco de dados.' });
+        }
+        
+        if (this.changes === 0) {
+            return res.status(404).json({ erro: 'Usuário não encontrado.' });
+        }
+
+        res.json({ mensagem: 'Cadastro apagado com sucesso!' });
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor a correr em http://localhost:${PORT}`);
 });
